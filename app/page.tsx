@@ -1,185 +1,295 @@
+"use client";
+
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import styles from "./page.module.css";
+
+type MediaItem = { src: string; alt: string };
+
+type Project = {
+  title: string;
+  subtitle: string;
+  buildClaim: string;
+  highlights: string[];
+  videoSrc: string;
+  screenshots: MediaItem[];
+};
+
+const PROFILE = {
+  name: "Wilson Husen",
+  age: 23,
+  location: "Sydney",
+  role: "Full-Stack & Mobile Developer",
+  email: "wilsonhusen78@gmail.com",
+  phone: "+61448408585",
+};
+
 export default function Home() {
+  const projects: Project[] = useMemo(
+    () => [
+      {
+        title: "Eatzy",
+        subtitle: "Full-stack restaurant voucher platform across mobile and web.",
+        buildClaim:
+          "Designed, built, and deployed entirely by me — features 2 mobile apps (User and Merchant) with proper backend architecture, Firestore schema, Admin tooling, Cloud Functions, and Scaling.",
+        highlights: [
+          "End-to-end authentication and data architecture using Firebase.",
+          "Restaurant admin system for menus, promotions, and pricing.",
+          "Natively built production-grade mobile UX built with SwiftUI and Jetpack Compose.",
+        ],
+        videoSrc: "/videos/eatzy-demo.mp4",
+        screenshots: [
+          { src: "/images/eatzy-1.png", alt: "Eatzy screenshot" },
+          { src: "/images/eatzy-2.png", alt: "Eatzy screenshot" },
+          { src: "/images/eatzy-3.png", alt: "Eatzy screenshot" },
+          { src: "/images/eatzy-4.png", alt: "Eatzy screenshot" },
+        ],
+      },
+      {
+        title: "JubeJam NFC",
+        subtitle: "NFC identity platform for physical product authenticity.",
+        buildClaim:
+          "Built full system solo — NFC integration, public product pages, admin portal, secure linking system, and deployment.",
+        highlights: [
+          "Hashed identity linking with Cloud Functions.",
+          "Public verification pages deployed on Vercel.",
+          "Admin dashboard with Firebase-backed product management.",
+          "Developed using flutter cross platform framework"
+        ],
+        videoSrc: "/videos/jubejam-demo.mp4",
+        screenshots: [
+          { src: "/images/jubejam-1.png", alt: "JubeJam screenshot" },
+          { src: "/images/jubejam-2.png", alt: "JubeJam screenshot" },
+          { src: "/images/jubejam-3.png", alt: "JubeJam screenshot" },
+          { src: "/images/jubejam-4.png", alt: "JubeJam screenshot" },
+        ],
+      },
+    ],
+    []
+  );
+
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="mx-auto max-w-4xl px-6 py-14">
-        {/* Header */}
-        <header className="border-b border-zinc-800 pb-10">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Your Name
-          </h1>
-          <p className="mt-2 text-zinc-300">
-            Graduate Software Engineer · Full-Stack / Mobile Developer
-          </p>
+    <main className={styles.page}>
+      <div className={styles.bg} aria-hidden="true" />
+      <div className={styles.noise} aria-hidden="true" />
 
-          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-zinc-300">
-            <a className="underline decoration-zinc-700 hover:text-white" href="mailto:you@email.com">you@email.com</a>
-            <span>·</span>
-            <a className="underline decoration-zinc-700 hover:text-white" href="https://www.linkedin.com/in/yourhandle" target="_blank">LinkedIn</a>
-            <span>·</span>
-            <a className="underline decoration-zinc-700 hover:text-white" href="https://github.com/yourhandle" target="_blank">GitHub</a>
-          </div>
+      <div className={styles.shell}>
+        <Header />
 
-          <p className="mt-6 max-w-2xl text-zinc-200 leading-relaxed">
-            I build production-grade mobile and web apps end-to-end: UI, APIs, databases,
-            auth, and deployment. Recent work includes Firebase-based platforms, admin portals,
-            and public web experiences optimized for performance and reliability.
-          </p>
-        </header>
+        <div className={styles.projectsWrap}>
+          {projects.map((p) => (
+            <ProjectShowcase key={p.title} project={p} />
+          ))}
+        </div>
 
-        {/* Sections */}
-        <Section title="Skills">
-          <ul className="grid gap-2 sm:grid-cols-2 text-zinc-200">
-            <li><b>Languages:</b> Swift, Kotlin, TypeScript, JavaScript, Python</li>
-            <li><b>Mobile:</b> SwiftUI, Jetpack Compose</li>
-            <li><b>Web:</b> Next.js, React, Tailwind CSS</li>
-            <li><b>Backend:</b> Firebase (Auth/Firestore/Storage), Node.js</li>
-            <li><b>DevOps:</b> Vercel, GitHub, CI basics</li>
-            <li><b>Practices:</b> REST, security rules, testing mindset, clean architecture</li>
-          </ul>
-        </Section>
-
-        <Section title="Projects">
-          <Project
-            name="Eatzy — Mobile + Web Platform"
-            bullets={[
-              "Built full-stack app workflows: authentication, Firestore data modeling, and admin tooling.",
-              "Implemented promotions and menu management features with secure access controls.",
-              "Optimized UX and performance for real-world usage (fast loads, clean UI, predictable state).",
-            ]}
-            links={[
-              { label: "GitHub", href: "https://github.com/yourhandle/yourrepo" },
-              { label: "Live", href: "https://yourliveurl.com" },
-            ]}
-          />
-          <Project
-            name="JubeJam — NFC Identity Platform"
-            bullets={[
-              "Designed public watch pages and admin portal with Firebase-backed data + Cloud Functions.",
-              "Implemented secure server-side endpoints and hashed user-key linking for privacy.",
-              "Deployed public web experience on Vercel with production-grade routing.",
-            ]}
-            links={[
-              { label: "Live", href: "https://yourliveurl.com" },
-            ]}
-          />
-        </Section>
-
-        <Section title="Experience">
-          <div className="space-y-6">
-            <Role
-              title="Business NSW Analyst"
-              meta="Jan 2024 – Dec 2025"
-              bullets={[
-                "Delivered analysis and reporting with a focus on stakeholder clarity and measurable outcomes.",
-                "Worked cross-functionally to support data-driven planning and decision-making.",
-              ]}
-            />
-            <Role
-              title="Full-Stack Mobile App Developer — Independent"
-              meta="Dec 2024 – Present"
-              bullets={[
-                "Built and shipped end-to-end app features across mobile + web.",
-                "Implemented Firebase Auth, Firestore schemas, Storage uploads, and secure Cloud Functions.",
-              ]}
-            />
-          </div>
-        </Section>
-
-        <Section title="Education">
-          <div className="space-y-2 text-zinc-200">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <div className="font-medium">Your University — Your Degree</div>
-              <div className="text-sm text-zinc-300">WAM: 81</div>
-            </div>
-            <p className="text-zinc-300">
-              Coursework: Data Structures & Algorithms, Databases, Software Engineering, Networks.
-              Built multiple production-style projects with modern mobile and web stacks.
-            </p>
-          </div>
-        </Section>
-
-        <Section title="Contact">
-          <p className="text-zinc-200">
-            Email me at{" "}
-            <a className="underline decoration-zinc-700 hover:text-white" href="mailto:you@email.com">
-              you@email.com
-            </a>{" "}
-            or message me on{" "}
-            <a className="underline decoration-zinc-700 hover:text-white" href="https://www.linkedin.com/in/yourhandle" target="_blank">
-              LinkedIn
-            </a>.
-          </p>
-        </Section>
-
-        <footer className="mt-14 border-t border-zinc-800 pt-8 text-sm text-zinc-500">
-          © {new Date().getFullYear()} Your Name. Built with Next.js + Vercel.
-        </footer>
+        <ContactFooter />
       </div>
     </main>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Header() {
+  const [copied, setCopied] = useState<null | "email" | "phone">(null);
+
+  async function copy(value: string, type: "email" | "phone") {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(type);
+      window.setTimeout(() => setCopied(null), 1100);
+    } catch {
+      // ignore
+    }
+  }
+
   return (
-    <section className="mt-12">
-      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-      <div className="mt-4">{children}</div>
+    <header className={styles.headerCard}>
+      <div className={styles.headerTop}>
+        <p className={styles.kicker}>PORTFOLIO</p>
+        <div className={styles.availability}>
+          <span className={styles.pulseDot} aria-hidden="true" />
+          <span>Open to graduate SWE roles</span>
+        </div>
+      </div>
+
+      <h1 className={styles.name}>{PROFILE.name}</h1>
+
+      <div className={styles.metaRow}>
+        <span>{PROFILE.role}</span>
+        <span className={styles.metaSep}>-</span>
+        <span>{PROFILE.location}</span>
+        <span className={styles.metaSep}>-</span>
+        <span>Age {PROFILE.age}</span>
+      </div>
+
+      <p className={styles.summary}>
+        This page features 2 flagship builds — <b>Eatzy</b> and <b>JubeJam NFC</b>. Both apps and functionality features are created 
+        end-to-end by me:
+        <br />1. product design
+        <br />2. UI UX
+        <br />3. backend systems
+        <br />4. testing and security
+        <br />5. deployment
+      </p>
+
+      <div className={styles.actionRow}>
+        <a className={styles.chip} href={`mailto:${PROFILE.email}`} title="Send email">
+          <span className={styles.chipIcon} aria-hidden="true">✉</span>
+          <span className={styles.chipText}>{PROFILE.email}</span>
+          <span className={styles.chipHint}>Email</span>
+        </a>
+
+        <a className={styles.chip} href={`tel:${PROFILE.phone}`} title="Call phone">
+          <span className={styles.chipIcon} aria-hidden="true">☎</span>
+          <span className={styles.chipText}>{PROFILE.phone}</span>
+          <span className={styles.chipHint}>Call</span>
+        </a>
+
+        <button
+          type="button"
+          className={styles.chipButton}
+          onClick={() => copy(PROFILE.email, "email")}
+          title="Copy email"
+        >
+          <span className={styles.chipIcon} aria-hidden="true">⧉</span>
+          <span className={styles.chipText}>
+            {copied === "email" ? "Copied email" : "Copy email"}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          className={styles.chipButton}
+          onClick={() => copy(PROFILE.phone, "phone")}
+          title="Copy phone"
+        >
+          <span className={styles.chipIcon} aria-hidden="true">⧉</span>
+          <span className={styles.chipText}>
+            {copied === "phone" ? "Copied phone" : "Copy phone"}
+          </span>
+        </button>
+      </div>
+
+      <div className={styles.proofStrip}>
+        <span className={styles.proofBadge}>Built Solo</span>
+        <span className={styles.proofText}>
+          Full ownership: UI - backend - database - security - deployment
+        </span>
+      </div>
+    </header>
+  );
+}
+
+function ProjectShowcase({ project }: { project: Project }) {
+  const { ref, inView } = useInViewOnce({ rootMargin: "-12% 0px -12% 0px" });
+
+  return (
+    <section
+      ref={ref}
+      className={[styles.section, inView ? styles.revealIn : styles.revealStart].join(" ")}
+    >
+      <div className={styles.projectHead}>
+        <h2 className={styles.projectTitle}>{project.title}</h2>
+        <p className={styles.projectSubtitle}>{project.subtitle}</p>
+      </div>
+
+      <div className={styles.mediaCard}>
+        <div className={styles.mediaTop}>
+          <span className={styles.mediaDot} />
+          <span className={styles.mediaDot} />
+          <span className={styles.mediaDot} />
+          <span className={styles.mediaLabel}>DEMO VIDEO</span>
+        </div>
+
+        <div className={styles.videoWrap}>
+          <video className={styles.video} src={project.videoSrc} controls playsInline preload="metadata" />
+          <div className={styles.videoHint}>
+            Replace later: <span className={styles.mono}>{project.videoSrc}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.projectBody}>
+        <p className={styles.buildClaim}>{project.buildClaim}</p>
+
+        <ul className={styles.highlights}>
+          {project.highlights.map((h) => (
+            <li key={h} className={styles.highlightItem}>
+              <span className={styles.bulletDot} aria-hidden="true" />
+              <span>{h}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className={styles.shotsGrid}>
+        {project.screenshots.map((img) => (
+          <div key={img.src} className={styles.shot}>
+            <Image
+              src={img.src}
+              alt={img.alt}
+              width={720}
+              height={1280}
+              className={styles.shotImg}
+            />
+            <div className={styles.shotOverlay} />
+          </div>
+        ))}
+      </div>
+
+      <p className={styles.helperLine}>
+        Drop PNGs into <span className={styles.mono}>/public/images</span> and videos into{" "}
+        <span className={styles.mono}>/public/videos</span>.
+      </p>
     </section>
   );
 }
 
-function Project({
-  name,
-  bullets,
-  links,
-}: {
-  name: string;
-  bullets: string[];
-  links?: { label: string; href: string }[];
-}) {
+function ContactFooter() {
   return (
-    <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900/20 p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="font-medium">{name}</div>
-        {links?.length ? (
-          <div className="flex gap-3 text-sm text-zinc-300">
-            {links.map((l) => (
-              <a key={l.href} className="underline decoration-zinc-700 hover:text-white" href={l.href} target="_blank">
-                {l.label}
-              </a>
-            ))}
-          </div>
-        ) : null}
+    <footer className={styles.footer}>
+      <div className={styles.footerRow}>
+        <div className={styles.footerLeft}>
+          <span className={styles.footerLabel}>Contact</span>
+          <span className={styles.footerSep}>-</span>
+          <a className={styles.footerLink} href={`mailto:${PROFILE.email}`}>
+            {PROFILE.email}
+          </a>
+          <span className={styles.footerSep}>-</span>
+          <a className={styles.footerLink} href={`tel:${PROFILE.phone}`}>
+            {PROFILE.phone}
+          </a>
+        </div>
+
+        <div className={styles.footerRight}>
+          © {new Date().getFullYear()} {PROFILE.name}
+        </div>
       </div>
-      <ul className="mt-4 list-disc space-y-2 pl-5 text-zinc-200">
-        {bullets.map((b) => (
-          <li key={b}>{b}</li>
-        ))}
-      </ul>
-    </div>
+    </footer>
   );
 }
 
-function Role({
-  title,
-  meta,
-  bullets,
-}: {
-  title: string;
-  meta: string;
-  bullets: string[];
-}) {
-  return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-900/10 p-6">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <div className="font-medium">{title}</div>
-        <div className="text-sm text-zinc-400">{meta}</div>
-      </div>
-      <ul className="mt-3 list-disc space-y-2 pl-5 text-zinc-200">
-        {bullets.map((b) => (
-          <li key={b}>{b}</li>
-        ))}
-      </ul>
-    </div>
-  );
+function useInViewOnce({ rootMargin = "0px" }: { rootMargin?: string } = {}) {
+  const ref = useRef<HTMLElement | null>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const e = entries[0];
+        if (e?.isIntersecting) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin, threshold: 0.12 }
+    );
+
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [rootMargin]);
+
+  return { ref, inView };
 }
