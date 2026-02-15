@@ -46,7 +46,7 @@ export default function Home() {
           "Restaurant admin system for menus, promotions, and pricing.",
           "Natively built production-grade mobile UX built with SwiftUI and Jetpack Compose.",
         ],
-        videoSrc: "/videos/eatzy-demo.mp4",
+        videoSrc: "/videos/eatzy-demo-fixed.mp4",
 
         // ✅ NEW: 3 + 3 grouped screenshots for Eatzy
         screenshotGroups: [
@@ -239,9 +239,7 @@ function ProjectShowcase({ project }: { project: Project }) {
 
         <div className={styles.videoWrap}>
           <video className={styles.video} src={project.videoSrc} controls playsInline preload="metadata" />
-          <div className={styles.videoHint}>
-            Replace later: <span className={styles.mono}>{project.videoSrc}</span>
-          </div>
+
         </div>
       </div>
 
@@ -299,10 +297,7 @@ function ProjectShowcase({ project }: { project: Project }) {
         </div>
       )}
 
-      <p className={styles.helperLine}>
-        Drop PNGs into <span className={styles.mono}>/public/images</span> and videos into{" "}
-        <span className={styles.mono}>/public/videos</span>.
-      </p>
+
     </section>
   );
 }
