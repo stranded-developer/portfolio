@@ -295,7 +295,7 @@ function ProjectShowcase({
   project: Project;
   onOpenLightbox: (title: string, items: MediaItem[], index: number) => void;
 }) {
-  const { ref, inView } = useInViewOnce({ rootMargin: "-12% 0px -12% 0px" });
+  const { ref, inView } = useInViewOnce({ rootMargin: "120px 0px" });
 
   return (
     <section ref={ref} className={[styles.section, inView ? styles.revealIn : styles.revealStart].join(" ")}>
