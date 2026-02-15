@@ -6,6 +6,12 @@ import styles from "./page.module.css";
 
 type MediaItem = { src: string; alt: string };
 
+type ScreenshotGroup = {
+  label: string;
+  badge?: string;
+  items: MediaItem[];
+};
+
 type Project = {
   title: string;
   subtitle: string;
@@ -13,15 +19,11 @@ type Project = {
   highlights: string[];
   videoSrc: string;
 
-  // ✅ Keep old screenshots (used by JubeJam exactly as-is)
+  // JubeJam uses this (unchanged)
   screenshots?: MediaItem[];
 
-  // ✅ New grouped screenshots (used only by Eatzy)
-  screenshotGroups?: {
-    label: string; // "Customer App" / "Merchant App"
-    badge?: string; // optional small pill
-    items: MediaItem[]; // 3 images each
-  }[];
+  // Eatzy uses this
+  screenshotGroups?: ScreenshotGroup[];
 };
 
 const PROFILE = {
@@ -32,6 +34,14 @@ const PROFILE = {
   email: "wilsonhusen78@gmail.com",
   phone: "+61448408585",
 };
+
+type LightboxState =
+  | null
+  | {
+      title: string; // "Customer App" / "Merchant App" (or project title)
+      items: MediaItem[];
+      index: number;
+    };
 
 export default function Home() {
   const projects: Project[] = useMemo(
@@ -47,8 +57,6 @@ export default function Home() {
           "Natively built production-grade mobile UX built with SwiftUI and Jetpack Compose.",
         ],
         videoSrc: "/videos/eatzy-demo-fixed.mp4",
-
-        // ✅ NEW: 3 + 3 grouped screenshots for Eatzy
         screenshotGroups: [
           {
             label: "Customer App",
@@ -68,7 +76,6 @@ export default function Home() {
               { src: "/images/eatzy-merchant-2.png", alt: "Eatzy Merchant App screenshot" },
               { src: "/images/eatzy-merchant-3.png", alt: "Eatzy Merchant App screenshot" },
               { src: "/images/eatzy-merchant-4.png", alt: "Eatzy Merchant App screenshot" },
-              
             ],
           },
         ],
@@ -85,8 +92,6 @@ export default function Home() {
           "Developed using flutter cross platform framework",
         ],
         videoSrc: "/videos/jubejam-demo.mp4",
-
-        // ✅ UNCHANGED: JubeJam continues to use screenshots exactly like before
         screenshots: [
           { src: "/images/jubejam-1.png", alt: "JubeJam screenshot" },
           { src: "/images/jubejam-2.png", alt: "JubeJam screenshot" },
@@ -98,6 +103,50 @@ export default function Home() {
     []
   );
 
+  const [lightbox, setLightbox] = useState<LightboxState>(null);
+
+  function openLightbox(title: string, items: MediaItem[], index: number) {
+    setLightbox({ title, items, index });
+  }
+
+  function closeLightbox() {
+    setLightbox(null);
+  }
+
+  function next() {
+    setLightbox((cur) => {
+      if (!cur) return cur;
+      return { ...cur, index: (cur.index + 1) % cur.items.length };
+    });
+  }
+
+  function prev() {
+    setLightbox((cur) => {
+      if (!cur) return cur;
+      return { ...cur, index: (cur.index - 1 + cur.items.length) % cur.items.length };
+    });
+  }
+
+  // Lock background scroll + keyboard navigation
+  useEffect(() => {
+    if (!lightbox) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightbox]);
+
   return (
     <main className={styles.page}>
       <div className={styles.bg} aria-hidden="true" />
@@ -107,13 +156,30 @@ export default function Home() {
         <Header />
 
         <div className={styles.projectsWrap}>
-          {projects.map((p) => (
-            <ProjectShowcase key={p.title} project={p} />
+          {projects.map((p, i) => (
+            <React.Fragment key={p.title}>
+              {i !== 0 ? <div className={styles.projectDivider} aria-hidden="true" /> : null}
+              <ProjectShowcase project={p} onOpenLightbox={openLightbox} />
+            </React.Fragment>
           ))}
         </div>
 
+
         <ContactFooter />
       </div>
+
+      {/* ✅ Fullscreen lightbox */}
+      {lightbox ? (
+        <Lightbox
+          title={lightbox.title}
+          items={lightbox.items}
+          index={lightbox.index}
+          onClose={closeLightbox}
+          onNext={next}
+          onPrev={prev}
+          onSetIndex={(i) => setLightbox((cur) => (cur ? { ...cur, index: i } : cur))}
+        />
+      ) : null}
     </main>
   );
 }
@@ -183,24 +249,14 @@ function Header() {
           <span className={styles.chipHint}>Call</span>
         </a>
 
-        <button
-          type="button"
-          className={styles.chipButton}
-          onClick={() => copy(PROFILE.email, "email")}
-          title="Copy email"
-        >
+        <button type="button" className={styles.chipButton} onClick={() => copy(PROFILE.email, "email")} title="Copy email">
           <span className={styles.chipIcon} aria-hidden="true">
             ⧉
           </span>
           <span className={styles.chipText}>{copied === "email" ? "Copied email" : "Copy email"}</span>
         </button>
 
-        <button
-          type="button"
-          className={styles.chipButton}
-          onClick={() => copy(PROFILE.phone, "phone")}
-          title="Copy phone"
-        >
+        <button type="button" className={styles.chipButton} onClick={() => copy(PROFILE.phone, "phone")} title="Copy phone">
           <span className={styles.chipIcon} aria-hidden="true">
             ⧉
           </span>
@@ -216,14 +272,17 @@ function Header() {
   );
 }
 
-function ProjectShowcase({ project }: { project: Project }) {
+function ProjectShowcase({
+  project,
+  onOpenLightbox,
+}: {
+  project: Project;
+  onOpenLightbox: (title: string, items: MediaItem[], index: number) => void;
+}) {
   const { ref, inView } = useInViewOnce({ rootMargin: "-12% 0px -12% 0px" });
 
   return (
-    <section
-      ref={ref}
-      className={[styles.section, inView ? styles.revealIn : styles.revealStart].join(" ")}
-    >
+    <section ref={ref} className={[styles.section, inView ? styles.revealIn : styles.revealStart].join(" ")}>
       <div className={styles.projectHead}>
         <h2 className={styles.projectTitle}>{project.title}</h2>
         <p className={styles.projectSubtitle}>{project.subtitle}</p>
@@ -239,7 +298,6 @@ function ProjectShowcase({ project }: { project: Project }) {
 
         <div className={styles.videoWrap}>
           <video className={styles.video} src={project.videoSrc} controls playsInline preload="metadata" />
-
         </div>
       </div>
 
@@ -256,10 +314,7 @@ function ProjectShowcase({ project }: { project: Project }) {
         </ul>
       </div>
 
-      {/* ✅ Screenshots rendering:
-          - Eatzy uses screenshotGroups (3 + 3 with headers)
-          - JubeJam stays exactly the same using screenshots (4 grid)
-      */}
+      {/* ✅ Eatzy grouped screenshots */}
       {project.screenshotGroups?.length ? (
         <div className={styles.groupWrap}>
           {project.screenshotGroups.map((group) => (
@@ -270,35 +325,155 @@ function ProjectShowcase({ project }: { project: Project }) {
               </div>
 
               <div className={styles.shotsGrid6}>
-                {group.items.map((img) => (
-                  <div key={img.src} className={styles.shot}>
-                    <Image
-                      src={img.src}
-                      alt={img.alt}
-                      width={720}
-                      height={1280}
-                      className={styles.shotImg}
-                    />
-                    <div className={styles.shotOverlay} />
-                  </div>
+                {group.items.map((img, idx) => (
+                  <button
+                    key={img.src}
+                    type="button"
+                    className={styles.shotButton}
+                    onClick={() => onOpenLightbox(group.label, group.items, idx)}
+                    aria-label={`Open ${group.label} screenshot ${idx + 1}`}
+                  >
+                    <div className={styles.shot}>
+                      <Image src={img.src} alt={img.alt} width={720} height={1280} className={styles.shotImg} />
+                      <div className={styles.shotOverlay} />
+                      <div className={styles.tapHint}>Tap</div>
+                    </div>
+                  </button>
                 ))}
               </div>
             </div>
           ))}
         </div>
       ) : (
+        // ✅ JubeJam unchanged layout, but still clickable (same fullscreen UX)
         <div className={styles.shotsGrid}>
-          {project.screenshots?.map((img) => (
-            <div key={img.src} className={styles.shot}>
-              <Image src={img.src} alt={img.alt} width={720} height={1280} className={styles.shotImg} />
-              <div className={styles.shotOverlay} />
-            </div>
+          {project.screenshots?.map((img, idx) => (
+            <button
+              key={img.src}
+              type="button"
+              className={styles.shotButton}
+              onClick={() => onOpenLightbox(project.title, project.screenshots ?? [], idx)}
+              aria-label={`Open ${project.title} screenshot ${idx + 1}`}
+            >
+              <div className={styles.shot}>
+                <Image src={img.src} alt={img.alt} width={720} height={1280} className={styles.shotImg} />
+                <div className={styles.shotOverlay} />
+                <div className={styles.tapHint}>Tap</div>
+              </div>
+            </button>
           ))}
         </div>
       )}
-
-
     </section>
+  );
+}
+
+function Lightbox({
+  title,
+  items,
+  index,
+  onClose,
+  onNext,
+  onPrev,
+  onSetIndex,
+}: {
+  title: string;
+  items: MediaItem[];
+  index: number;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  onSetIndex: (i: number) => void;
+}) {
+  const startX = useRef<number | null>(null);
+  const lastX = useRef<number | null>(null);
+  const dragging = useRef(false);
+
+  function onTouchStart(e: React.TouchEvent) {
+    if (!e.touches[0]) return;
+    dragging.current = true;
+    startX.current = e.touches[0].clientX;
+    lastX.current = e.touches[0].clientX;
+  }
+
+  function onTouchMove(e: React.TouchEvent) {
+    if (!dragging.current || !e.touches[0]) return;
+    lastX.current = e.touches[0].clientX;
+  }
+
+  function onTouchEnd() {
+    if (!dragging.current) return;
+    dragging.current = false;
+
+    const sx = startX.current;
+    const lx = lastX.current;
+    startX.current = null;
+    lastX.current = null;
+
+    if (sx == null || lx == null) return;
+    const dx = lx - sx;
+
+    // swipe threshold
+    if (Math.abs(dx) < 42) return;
+
+    if (dx < 0) onNext();
+    else onPrev();
+  }
+
+  const active = items[index];
+
+  return (
+    <div className={styles.lightboxBackdrop} role="dialog" aria-modal="true" aria-label={`${title} screenshots`}>
+      <button type="button" className={styles.lightboxClose} onClick={onClose} aria-label="Close fullscreen">
+        ✕
+      </button>
+
+      <div className={styles.lightboxTop}>
+        <div className={styles.lightboxTitle}>{title}</div>
+        <div className={styles.lightboxCount}>
+          {index + 1} / {items.length}
+        </div>
+      </div>
+
+      <button type="button" className={styles.lightboxNavLeft} onClick={onPrev} aria-label="Previous image">
+        ‹
+      </button>
+      <button type="button" className={styles.lightboxNavRight} onClick={onNext} aria-label="Next image">
+        ›
+      </button>
+
+      <div
+        className={styles.lightboxStage}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        <div className={styles.lightboxFrame}>
+          <Image
+            src={active.src}
+            alt={active.alt}
+            fill
+            sizes="100vw"
+            className={styles.lightboxImg}
+            priority
+          />
+        </div>
+      </div>
+
+      <div className={styles.lightboxThumbs} aria-label="Thumbnails">
+        {items.map((it, i) => (
+          <button
+            key={it.src}
+            type="button"
+            className={[styles.lightboxThumb, i === index ? styles.lightboxThumbActive : ""].join(" ")}
+            onClick={() => onSetIndex(i)}
+            aria-label={`Go to image ${i + 1}`}
+          >
+            <Image src={it.src} alt="" width={120} height={200} className={styles.lightboxThumbImg} />
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -318,7 +493,9 @@ function ContactFooter() {
           </a>
         </div>
 
-        <div className={styles.footerRight}>© {new Date().getFullYear()} {PROFILE.name}</div>
+        <div className={styles.footerRight}>
+          © {new Date().getFullYear()} {PROFILE.name}
+        </div>
       </div>
     </footer>
   );
