@@ -342,10 +342,10 @@
   /* ✅ Laptop/Desktop: cap the video width so it looks more premium */
   @media (min-width: 900px){
     .video{
-      max-width: 820px; /* adjust: 720 / 820 / 900 */
+      max-width: 720px; /* adjust: 720 / 820 / 900 */
     }
     .videoWrap{
-    padding: 18px;
+    padding: 4px;
     }
   }
 
