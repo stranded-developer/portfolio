@@ -59,8 +59,7 @@ export default function Home() {
         videoSrc: "/videos/eatzy-demo-fixed.mp4",
         screenshotGroups: [
           {
-            label: "Customer App",
-            badge: "User",
+            label: "User App",
             items: [
               { src: "/images/eatzy-user-1.png", alt: "Eatzy Customer App screenshot" },
               { src: "/images/eatzy-user-2.png", alt: "Eatzy Customer App screenshot" },
@@ -70,7 +69,6 @@ export default function Home() {
           },
           {
             label: "Merchant App",
-            badge: "Merchant",
             items: [
               { src: "/images/eatzy-merchant-1.png", alt: "Eatzy Merchant App screenshot" },
               { src: "/images/eatzy-merchant-2.png", alt: "Eatzy Merchant App screenshot" },
@@ -91,12 +89,30 @@ export default function Home() {
           "Admin dashboard with Firebase-backed product management.",
           "Developed using flutter cross platform framework",
         ],
-        videoSrc: "/videos/jubejam-demo.mp4",
-        screenshots: [
-          { src: "/images/jubejam-1.png", alt: "JubeJam screenshot" },
-          { src: "/images/jubejam-2.png", alt: "JubeJam screenshot" },
-          { src: "/images/jubejam-3.png", alt: "JubeJam screenshot" },
-          { src: "/images/jubejam-4.png", alt: "JubeJam screenshot" },
+        videoSrc: "/videos/jubejam-demo-fixed.mp4",
+        screenshotGroups: [
+          {
+            label: "Mobile App",
+            items: [
+              { src: "/images/jubejam-mobile-1.png", alt: "Jubejam App screenshot" },
+
+            ],
+          },
+          {
+            label: "Admin Webpage",
+            items: [
+              { src: "/images/jubejam-admin-1.png", alt: "Jubejam Admin screenshot" },
+              { src: "/images/jubejam-admin-2.png", alt: "Jubejam Admin screenshot" },
+              { src: "/images/jubejam-admin-3.png", alt: "Jubejam Admin screenshot" },
+            ],
+          },
+          {
+            label: "Warranty Webpage",
+            items: [
+              { src: "/images/jubejam-warranty-1.png", alt: "Jubejam Warranty screenshot" },
+              { src: "/images/jubejam-warranty-2.png", alt: "Jubejam Warranty screenshot" },
+            ],
+          },
         ],
       },
     ],
