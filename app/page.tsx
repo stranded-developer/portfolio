@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./page.module.css";
 
+
 type MediaItem = { src: string; alt: string };
 
 type Project = {
