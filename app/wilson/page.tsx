@@ -310,8 +310,8 @@ function ProjectShowcase({
    * - threshold low => doesn't wait for huge portion visible
    */
   const { ref, inView } = useInViewOnce({
-    rootMargin: "0px 0px 15% 0px", // <-- earlier reveal (title + bit of video)
-    threshold: 0.20,
+    rootMargin: "0px 0px -10% 0px", // <-- earlier reveal (title + bit of video)
+    threshold: 0.2,
   });
 
   return (
