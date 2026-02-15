@@ -1,6 +1,9 @@
 /* ==========================================
    page.tsx ✅ FULL FILE (REPLACE ALL)
-   Fix: reveal triggers earlier (title + bit of video)
+   Adds:
+   1) Professional intro overlay ("Welcome to Wilson's Portfolio")
+   2) Smooth page entrance animation
+   3) Respects prefers-reduced-motion
 ========================================== */
 "use client";
 
@@ -23,10 +26,7 @@ type Project = {
   highlights: string[];
   videoSrc: string;
 
-  // JubeJam uses this (optional, unchanged)
   screenshots?: MediaItem[];
-
-  // Eatzy uses this
   screenshotGroups?: ScreenshotGroup[];
 };
 
@@ -46,6 +46,21 @@ type LightboxState =
       items: MediaItem[];
       index: number;
     };
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setReduced(!!m.matches);
+    onChange();
+    m.addEventListener?.("change", onChange);
+    return () => m.removeEventListener?.("change", onChange);
+  }, []);
+
+  return reduced;
+}
 
 export default function Home() {
   const projects: Project[] = useMemo(
@@ -144,7 +159,7 @@ export default function Home() {
     });
   }
 
-  // Lock background scroll + keyboard navigation
+  // Lock background scroll + keyboard navigation (lightbox)
   useEffect(() => {
     if (!lightbox) return;
     const prevOverflow = document.body.style.overflow;
@@ -164,12 +179,71 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lightbox]);
 
+  // ✅ Intro overlay + page entrance
+  const reducedMotion = usePrefersReducedMotion();
+  const [showIntro, setShowIntro] = useState(true);
+  const [introExit, setIntroExit] = useState(false);
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    // Page entrance class toggles after mount
+    const t = window.setTimeout(() => setEntered(true), 40);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // If you want the intro to show EVERY time, delete this whole block + keep showIntro default true.
+    const seen = window.sessionStorage.getItem("wilson_portfolio_intro_seen");
+    if (seen === "1" || reducedMotion) {
+      setShowIntro(false);
+      setIntroExit(false);
+      return;
+    }
+
+    // Auto-dismiss after ~2.2s (plus exit animation)
+    const auto = window.setTimeout(() => {
+      setIntroExit(true);
+      window.setTimeout(() => {
+        window.sessionStorage.setItem("wilson_portfolio_intro_seen", "1");
+        setShowIntro(false);
+      }, 520);
+    }, 2200);
+
+    return () => window.clearTimeout(auto);
+  }, [reducedMotion]);
+
+  // Lock scroll while intro is visible (unless reduced motion or hidden)
+  useEffect(() => {
+    if (!showIntro) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [showIntro]);
+
   return (
     <main className={styles.page}>
       <div className={styles.bg} aria-hidden="true" />
       <div className={styles.noise} aria-hidden="true" />
 
-      <div className={styles.shell}>
+      {/* ✅ Intro Overlay */}
+      {showIntro ? (
+        <div className={[styles.introOverlay, introExit ? styles.introExit : ""].join(" ")} aria-hidden="true">
+          <div className={styles.introInner}>
+            <div className={styles.introKicker}>WELCOME</div>
+            <div className={styles.introName}>Wilson&apos;s Portfolio</div>
+            <div className={styles.introSub}>Full-Stack • Mobile • Backend Systems</div>
+            <div className={styles.introLine} />
+            <div className={styles.introGlow} aria-hidden="true" />
+          </div>
+        </div>
+      ) : null}
+
+      {/* ✅ Page entrance animation wrapper */}
+      <div className={[styles.shell, styles.pageEnter, entered ? styles.pageEnterIn : ""].join(" ")}>
         <Header />
 
         <div className={styles.projectsWrap}>
@@ -304,14 +378,9 @@ function ProjectShowcase({
   project: Project;
   onOpenLightbox: (title: string, items: MediaItem[], index: number) => void;
 }) {
-  /**
-   * ✅ EARLY TRIGGER SETTINGS
-   * - rootMargin bottom positive => triggers earlier (when top/title starts entering)
-   * - threshold low => doesn't wait for huge portion visible
-   */
   const { ref, inView } = useInViewOnce({
-    rootMargin: "0px 0px 35% 0px", // <-- earlier reveal (title + bit of video)
-    threshold: 0.06,
+    rootMargin: "0px 0px -10% 0px",
+    threshold: 0.2,
   });
 
   return (
@@ -347,7 +416,6 @@ function ProjectShowcase({
         </ul>
       </div>
 
-      {/* ✅ Eatzy grouped screenshots */}
       {project.screenshotGroups?.length ? (
         <div className={styles.groupWrap}>
           {project.screenshotGroups.map((group) => (
@@ -524,10 +592,6 @@ function ContactFooter() {
   );
 }
 
-/**
- * ✅ FIXED: allow threshold + rootMargin tuning
- * Default values already "early-ish", and ProjectShowcase sets even earlier.
- */
 function useInViewOnce({
   rootMargin = "0px 0px 25% 0px",
   threshold = 0.06,
@@ -547,7 +611,7 @@ function useInViewOnce({
         const e = entries[0];
         if (e?.isIntersecting) {
           setInView(true);
-          obs.disconnect(); // animate once
+          obs.disconnect();
         }
       },
       { rootMargin, threshold }
