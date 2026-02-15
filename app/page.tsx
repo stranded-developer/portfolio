@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./page.module.css";
 
-
 type MediaItem = { src: string; alt: string };
 
 type Project = {
@@ -13,13 +12,22 @@ type Project = {
   buildClaim: string;
   highlights: string[];
   videoSrc: string;
-  screenshots: MediaItem[];
+
+  // ✅ Keep old screenshots (used by JubeJam exactly as-is)
+  screenshots?: MediaItem[];
+
+  // ✅ New grouped screenshots (used only by Eatzy)
+  screenshotGroups?: {
+    label: string; // "Customer App" / "Merchant App"
+    badge?: string; // optional small pill
+    items: MediaItem[]; // 3 images each
+  }[];
 };
 
 const PROFILE = {
-  name: "PIPI KIWI",
+  name: "Wilson Husen",
   age: 23,
-  location: "Sydney",
+  location: "Jakarta",
   role: "Full-Stack & Mobile Developer",
   email: "wilsonhusen78@gmail.com",
   phone: "+61448408585",
@@ -39,11 +47,30 @@ export default function Home() {
           "Natively built production-grade mobile UX built with SwiftUI and Jetpack Compose.",
         ],
         videoSrc: "/videos/eatzy-demo.mp4",
-        screenshots: [
-          { src: "/images/eatzy-1.png", alt: "Eatzy screenshot" },
-          { src: "/images/eatzy-2.png", alt: "Eatzy screenshot" },
-          { src: "/images/eatzy-3.png", alt: "Eatzy screenshot" },
-          { src: "/images/eatzy-4.png", alt: "Eatzy screenshot" },
+
+        // ✅ NEW: 3 + 3 grouped screenshots for Eatzy
+        screenshotGroups: [
+          {
+            label: "Customer App",
+            badge: "User",
+            items: [
+              { src: "/images/eatzy-user-1.png", alt: "Eatzy Customer App screenshot" },
+              { src: "/images/eatzy-user-2.png", alt: "Eatzy Customer App screenshot" },
+              { src: "/images/eatzy-user-3.png", alt: "Eatzy Customer App screenshot" },
+              { src: "/images/eatzy-user-4.png", alt: "Eatzy Customer App screenshot" },
+            ],
+          },
+          {
+            label: "Merchant App",
+            badge: "Merchant",
+            items: [
+              { src: "/images/eatzy-merchant-1.png", alt: "Eatzy Merchant App screenshot" },
+              { src: "/images/eatzy-merchant-2.png", alt: "Eatzy Merchant App screenshot" },
+              { src: "/images/eatzy-merchant-3.png", alt: "Eatzy Merchant App screenshot" },
+              { src: "/images/eatzy-merchant-4.png", alt: "Eatzy Merchant App screenshot" },
+              
+            ],
+          },
         ],
       },
       {
@@ -55,9 +82,11 @@ export default function Home() {
           "Hashed identity linking with Cloud Functions.",
           "Public verification pages deployed on Vercel.",
           "Admin dashboard with Firebase-backed product management.",
-          "Developed using flutter cross platform framework"
+          "Developed using flutter cross platform framework",
         ],
         videoSrc: "/videos/jubejam-demo.mp4",
+
+        // ✅ UNCHANGED: JubeJam continues to use screenshots exactly like before
         screenshots: [
           { src: "/images/jubejam-1.png", alt: "JubeJam screenshot" },
           { src: "/images/jubejam-2.png", alt: "JubeJam screenshot" },
@@ -123,24 +152,33 @@ function Header() {
       </div>
 
       <p className={styles.summary}>
-        This page features 2 flagship builds — <b>Eatzy</b> and <b>JubeJam NFC</b>. Both apps and functionality features are created 
-        end-to-end by me:
-        <br />1. product design
-        <br />2. UI UX
-        <br />3. backend systems
-        <br />4. testing and security
-        <br />5. deployment
+        This page features 2 flagship builds — <b>Eatzy</b> and <b>JubeJam NFC</b>. Both apps and functionality
+        features are created end-to-end by me:
+        <br />
+        1. product design
+        <br />
+        2. UI UX
+        <br />
+        3. backend systems
+        <br />
+        4. testing and security
+        <br />
+        5. deployment
       </p>
 
       <div className={styles.actionRow}>
         <a className={styles.chip} href={`mailto:${PROFILE.email}`} title="Send email">
-          <span className={styles.chipIcon} aria-hidden="true">✉</span>
+          <span className={styles.chipIcon} aria-hidden="true">
+            ✉
+          </span>
           <span className={styles.chipText}>{PROFILE.email}</span>
           <span className={styles.chipHint}>Email</span>
         </a>
 
         <a className={styles.chip} href={`tel:${PROFILE.phone}`} title="Call phone">
-          <span className={styles.chipIcon} aria-hidden="true">☎</span>
+          <span className={styles.chipIcon} aria-hidden="true">
+            ☎
+          </span>
           <span className={styles.chipText}>{PROFILE.phone}</span>
           <span className={styles.chipHint}>Call</span>
         </a>
@@ -151,10 +189,10 @@ function Header() {
           onClick={() => copy(PROFILE.email, "email")}
           title="Copy email"
         >
-          <span className={styles.chipIcon} aria-hidden="true">⧉</span>
-          <span className={styles.chipText}>
-            {copied === "email" ? "Copied email" : "Copy email"}
+          <span className={styles.chipIcon} aria-hidden="true">
+            ⧉
           </span>
+          <span className={styles.chipText}>{copied === "email" ? "Copied email" : "Copy email"}</span>
         </button>
 
         <button
@@ -163,18 +201,16 @@ function Header() {
           onClick={() => copy(PROFILE.phone, "phone")}
           title="Copy phone"
         >
-          <span className={styles.chipIcon} aria-hidden="true">⧉</span>
-          <span className={styles.chipText}>
-            {copied === "phone" ? "Copied phone" : "Copy phone"}
+          <span className={styles.chipIcon} aria-hidden="true">
+            ⧉
           </span>
+          <span className={styles.chipText}>{copied === "phone" ? "Copied phone" : "Copy phone"}</span>
         </button>
       </div>
 
       <div className={styles.proofStrip}>
         <span className={styles.proofBadge}>Built Solo</span>
-        <span className={styles.proofText}>
-          Full ownership: UI - backend - database - security - deployment
-        </span>
+        <span className={styles.proofText}>Full ownership: UI - backend - database - security - deployment</span>
       </div>
     </header>
   );
@@ -222,20 +258,46 @@ function ProjectShowcase({ project }: { project: Project }) {
         </ul>
       </div>
 
-      <div className={styles.shotsGrid}>
-        {project.screenshots.map((img) => (
-          <div key={img.src} className={styles.shot}>
-            <Image
-              src={img.src}
-              alt={img.alt}
-              width={720}
-              height={1280}
-              className={styles.shotImg}
-            />
-            <div className={styles.shotOverlay} />
-          </div>
-        ))}
-      </div>
+      {/* ✅ Screenshots rendering:
+          - Eatzy uses screenshotGroups (3 + 3 with headers)
+          - JubeJam stays exactly the same using screenshots (4 grid)
+      */}
+      {project.screenshotGroups?.length ? (
+        <div className={styles.groupWrap}>
+          {project.screenshotGroups.map((group) => (
+            <div key={group.label} className={styles.groupBlock}>
+              <div className={styles.groupHeader}>
+                <div className={styles.groupTitle}>{group.label}</div>
+                {group.badge ? <div className={styles.groupBadge}>{group.badge}</div> : null}
+              </div>
+
+              <div className={styles.shotsGrid6}>
+                {group.items.map((img) => (
+                  <div key={img.src} className={styles.shot}>
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      width={720}
+                      height={1280}
+                      className={styles.shotImg}
+                    />
+                    <div className={styles.shotOverlay} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.shotsGrid}>
+          {project.screenshots?.map((img) => (
+            <div key={img.src} className={styles.shot}>
+              <Image src={img.src} alt={img.alt} width={720} height={1280} className={styles.shotImg} />
+              <div className={styles.shotOverlay} />
+            </div>
+          ))}
+        </div>
+      )}
 
       <p className={styles.helperLine}>
         Drop PNGs into <span className={styles.mono}>/public/images</span> and videos into{" "}
@@ -261,9 +323,7 @@ function ContactFooter() {
           </a>
         </div>
 
-        <div className={styles.footerRight}>
-          © {new Date().getFullYear()} {PROFILE.name}
-        </div>
+        <div className={styles.footerRight}>© {new Date().getFullYear()} {PROFILE.name}</div>
       </div>
     </footer>
   );

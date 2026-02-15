@@ -497,3 +497,57 @@
     .pulseDot::after{ animation: none; }
   }
   
+  /* ===========================
+   ADD THESE TO page.module.css
+   (keeps JubeJam grid unchanged)
+=========================== */
+
+.groupWrap{
+  margin-top: clamp(18px, 2.8vw, 44px);
+  display: grid;
+  gap: 16px;
+}
+
+.groupBlock{
+  /* no extra styling needed - keeps your clean look */
+}
+
+.groupHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+}
+
+.groupTitle{
+  font-size: calc(var(--r-sm) * var(--scale));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.70);
+}
+
+.groupBadge{
+  font-size: calc(var(--r-xxs) * var(--scale));
+  letter-spacing: 0.18em;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.22);
+  color: rgba(255,255,255,0.75);
+}
+
+/* 3 across on desktop, 2 on mobile */
+.shotsGrid6{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (min-width: 640px){
+  .shotsGrid6{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
