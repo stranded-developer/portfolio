@@ -1,7 +1,3 @@
-/* ==========================================
-   page.tsx ✅ FULL FILE (REPLACE ALL)
-   Fix: reveal triggers earlier (title + bit of video)
-========================================== */
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -23,7 +19,7 @@ type Project = {
   highlights: string[];
   videoSrc: string;
 
-  // JubeJam uses this (optional, unchanged)
+  // JubeJam uses this (unchanged)
   screenshots?: MediaItem[];
 
   // Eatzy uses this
@@ -42,7 +38,7 @@ const PROFILE = {
 type LightboxState =
   | null
   | {
-      title: string;
+      title: string; // "Customer App" / "Merchant App" (or project title)
       items: MediaItem[];
       index: number;
     };
@@ -97,7 +93,10 @@ export default function Home() {
         screenshotGroups: [
           {
             label: "Mobile App",
-            items: [{ src: "/images/jubejam-mobile-1.png", alt: "Jubejam App screenshot" }],
+            items: [
+              { src: "/images/jubejam-mobile-1.png", alt: "Jubejam App screenshot" },
+
+            ],
           },
           {
             label: "Admin Webpage",
@@ -181,9 +180,11 @@ export default function Home() {
           ))}
         </div>
 
+
         <ContactFooter />
       </div>
 
+      {/* ✅ Fullscreen lightbox */}
       {lightbox ? (
         <Lightbox
           title={lightbox.title}
@@ -233,8 +234,8 @@ function Header() {
       </div>
 
       <p className={styles.summary}>
-        This page features 2 flagship builds — <b>Eatzy</b> and <b>JubeJam NFC</b>. Both apps and functionality features
-        are created end-to-end by me:
+        This page features 2 flagship builds — <b>Eatzy</b> and <b>JubeJam NFC</b>. Both apps and functionality
+        features are created end-to-end by me:
         <br />
         1. product design
         <br />
@@ -264,24 +265,14 @@ function Header() {
           <span className={styles.chipHint}>Call</span>
         </a>
 
-        <button
-          type="button"
-          className={styles.chipButton}
-          onClick={() => copy(PROFILE.email, "email")}
-          title="Copy email"
-        >
+        <button type="button" className={styles.chipButton} onClick={() => copy(PROFILE.email, "email")} title="Copy email">
           <span className={styles.chipIcon} aria-hidden="true">
             ⧉
           </span>
           <span className={styles.chipText}>{copied === "email" ? "Copied email" : "Copy email"}</span>
         </button>
 
-        <button
-          type="button"
-          className={styles.chipButton}
-          onClick={() => copy(PROFILE.phone, "phone")}
-          title="Copy phone"
-        >
+        <button type="button" className={styles.chipButton} onClick={() => copy(PROFILE.phone, "phone")} title="Copy phone">
           <span className={styles.chipIcon} aria-hidden="true">
             ⧉
           </span>
@@ -304,15 +295,7 @@ function ProjectShowcase({
   project: Project;
   onOpenLightbox: (title: string, items: MediaItem[], index: number) => void;
 }) {
-  /**
-   * ✅ EARLY TRIGGER SETTINGS
-   * - rootMargin bottom positive => triggers earlier (when top/title starts entering)
-   * - threshold low => doesn't wait for huge portion visible
-   */
-  const { ref, inView } = useInViewOnce({
-    rootMargin: "0px 0px -10% 0px", // <-- earlier reveal (title + bit of video)
-    threshold: 0.2,
-  });
+  const { ref, inView } = useInViewOnce({ rootMargin: "-12% 0px -12% 0px" });
 
   return (
     <section ref={ref} className={[styles.section, inView ? styles.revealIn : styles.revealStart].join(" ")}>
@@ -378,6 +361,7 @@ function ProjectShowcase({
           ))}
         </div>
       ) : (
+        // ✅ JubeJam unchanged layout, but still clickable (same fullscreen UX)
         <div className={styles.shotsGrid}>
           {project.screenshots?.map((img, idx) => (
             <button
@@ -445,7 +429,9 @@ function Lightbox({
     if (sx == null || lx == null) return;
     const dx = lx - sx;
 
+    // swipe threshold
     if (Math.abs(dx) < 42) return;
+
     if (dx < 0) onNext();
     else onPrev();
   }
@@ -479,7 +465,14 @@ function Lightbox({
         onTouchEnd={onTouchEnd}
       >
         <div className={styles.lightboxFrame}>
-          <Image src={active.src} alt={active.alt} fill sizes="100vw" className={styles.lightboxImg} priority />
+          <Image
+            src={active.src}
+            alt={active.alt}
+            fill
+            sizes="100vw"
+            className={styles.lightboxImg}
+            priority
+          />
         </div>
       </div>
 
@@ -524,17 +517,7 @@ function ContactFooter() {
   );
 }
 
-/**
- * ✅ FIXED: allow threshold + rootMargin tuning
- * Default values already "early-ish", and ProjectShowcase sets even earlier.
- */
-function useInViewOnce({
-  rootMargin = "0px 0px 25% 0px",
-  threshold = 0.06,
-}: {
-  rootMargin?: string;
-  threshold?: number;
-} = {}) {
+function useInViewOnce({ rootMargin = "0px" }: { rootMargin?: string } = {}) {
   const ref = useRef<HTMLElement | null>(null);
   const [inView, setInView] = useState(false);
 
@@ -547,15 +530,15 @@ function useInViewOnce({
         const e = entries[0];
         if (e?.isIntersecting) {
           setInView(true);
-          obs.disconnect(); // animate once
+          obs.disconnect();
         }
       },
-      { rootMargin, threshold }
+      { rootMargin, threshold: 0.12 }
     );
 
     obs.observe(el);
     return () => obs.disconnect();
-  }, [rootMargin, threshold]);
+  }, [rootMargin]);
 
   return { ref, inView };
 }
