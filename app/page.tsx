@@ -17,7 +17,7 @@ type Project = {
 };
 
 const PROFILE = {
-  name: "Wilson Husen",
+  name: "PIPI KIWI",
   age: 23,
   location: "Sydney",
   role: "Full-Stack & Mobile Developer",
