@@ -326,13 +326,30 @@
     padding: clamp(12px, 1.8vw, 16px);
   }
   
+
+
   .video{
-    width: 100%;
-    height: auto;
-    border-radius: clamp(14px, 2vw, 18px);
-    border: 1px solid rgba(255,255,255,0.10);
-    background: #0a0a0b;
+  width: 100%;
+  height: auto;
+  border-radius: clamp(14px, 2vw, 18px);
+  border: 1px solid rgba(255,255,255,0.10);
+  background: #0a0a0b;
+
+  /* ✅ default: full width (phone looks the same) */
+  display: block;
+  margin: 0 auto;
   }
+  /* ✅ Laptop/Desktop: cap the video width so it looks more premium */
+  @media (min-width: 900px){
+    .video{
+      max-width: 820px; /* adjust: 720 / 820 / 900 */
+    }
+    .videoWrap{
+    padding: 18px;
+    }
+  }
+
+
   
   .videoHint{
     position: absolute;

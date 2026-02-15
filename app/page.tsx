@@ -32,7 +32,7 @@ const PROFILE = {
   location: "Jakarta",
   role: "Full-Stack & Mobile Developer",
   email: "wilsonhusen78@gmail.com",
-  phone: "+61448408585",
+  phone: "+6285833339997",
 };
 
 type LightboxState =
