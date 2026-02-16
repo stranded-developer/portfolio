@@ -29,10 +29,10 @@ type Project = {
 const PROFILE = {
   name: "Wilson Husen",
   age: 23,
-  location: "Jakarta",
+  location: "Sydney",
   role: "Full-Stack & Mobile Developer",
   email: "wilsonhusen78@gmail.com",
-  phone: "+6285833339997",
+  phone: "+61448408585",
 };
 
 type LightboxState =
@@ -56,7 +56,7 @@ export default function Home() {
           "Restaurant admin system for menus, promotions, and pricing.",
           "Natively built production-grade mobile UX built with SwiftUI and Jetpack Compose.",
         ],
-        videoSrc: "/videos/eatzy-demo-fixed.mp4",
+        videoSrc: "/videos/eatzy-demo-en-fixed.mp4",
         screenshotGroups: [
           {
             label: "User App",
