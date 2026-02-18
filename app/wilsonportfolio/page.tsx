@@ -221,6 +221,7 @@ function Header() {
         <p className={styles.kicker}>PORTFOLIO</p>
         <div className={styles.availability}>
           <span className={styles.pulseDot} aria-hidden="true" />
+          
           <span>Open to SWE and full stack roles</span>
         </div>
       </div>
