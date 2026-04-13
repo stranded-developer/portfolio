@@ -28,7 +28,7 @@ type Project = {
 
 const PROFILE = {
   name: "Wilson Husen",
-  age: 23,
+  age: 24,
   location: "Jakarta",
   role: "Full-Stack & Mobile Developer",
   email: "wilsonhusen78@gmail.com",
