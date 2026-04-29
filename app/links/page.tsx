@@ -84,6 +84,28 @@ export default function LinksPage() {
           <span className={styles.btnLabel}>Explore us on Instagram</span>
           <span className={styles.btnArrow}>›</span>
         </a>
+
+
+          <a
+          className={styles.btn}
+  href="https://www.eatzyeats.com/download"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <span className={`${styles.btnIcon} ${styles.btnIconDownload}`}>
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17 12h-4V5a1 1 0 0 0-2 0v7H7l5 5 5-5zm-9 6h8v2H8v-2z"/>
+    </svg>
+  </span>
+  <span className={styles.btnLabel}>Download Eatzy</span>
+  <span className={styles.btnArrow}>›</span>
+</a>
+
+        
+
+
+
+
         </div>
 
         <p className={styles.footer}>© 2025 Eatzy</p>
