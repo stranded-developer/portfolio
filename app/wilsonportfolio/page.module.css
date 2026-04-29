@@ -8,39 +8,9 @@
 /* ---------------------------
    Balanced typography scale
 --------------------------- */
-:root{
-    --scale: 1;
-  
-    /* Body text bigger */
-    --r-xxs: clamp(12px, 0.9vw, 14px);
-    --r-xs:  clamp(13px, 1.0vw, 15px);
-    --r-sm:  clamp(14px, 1.1vw, 16px);
-    --r-md:  clamp(16px, 1.3vw, 20px);
-    --r-lg:  clamp(18px, 1.5vw, 22px);
-  
-    /* Header name */
-    --r-h1: clamp(32px, 4.2vw, 52px);
-  
-    /* Project titles — intentionally smaller now */
-    --r-h2: clamp(32px, 3.2vw, 52px);
-  
-    --pad: clamp(18px, 2.6vw, 32px);
-    --rad: clamp(18px, 2.4vw, 26px);
-    --rad2: clamp(16px, 2vw, 22px);
-  }
-  
-/* ✅ Desktop: make everything smaller (phones unchanged) */
-@media (min-width: 900px){
-  :root{ --scale: 0.92; } /* try 0.90–0.95 */
-}
 
-@media (min-width: 1440px){
-  :root{ --scale: 0.88; }
-}
+  
 
-@media (min-width: 1920px){
-  :root{ --scale: 0.84; }
-}
 
   .page{
     position: relative; /* ✅ needed for pseudo bg layer */
